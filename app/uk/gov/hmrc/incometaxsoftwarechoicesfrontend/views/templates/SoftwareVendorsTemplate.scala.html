@@ -26,10 +26,11 @@
 @this(
   softwareSearchStatusTemplate: SoftwareSearchStatusTemplate,
   hmrcNewTabLinkHelper: HmrcNewTabLinkHelper,
-  govukSummaryList : GovukSummaryList
+  govukSummaryList : GovukSummaryList,
+  govukWarningText : GovukWarningText
 )
 
-@(softwareVendors: SoftwareVendors, zeroResults: Boolean)(implicit messages: Messages)
+@(softwareVendors: SoftwareVendors, zeroResults: Boolean, futureFeatures: Boolean = false)(implicit messages: Messages)
 
 @customSummaryListRow(key: String, filtersAvailable: Seq[VendorFilter]) = @{
 
@@ -71,11 +72,18 @@
 
 }
 
+@softwareVendorFutureAvailabilityWarning(vendor: SoftwareVendorModel) = @{
+    if (futureFeatures) govukWarningText(WarningText(
+        iconFallbackText = Some("Warning"),
+        content = Text(vendor.nextRelease.getOrElse(""))
+    ))
+}
+
 @softwareVendorSuitableFor(vendor: SoftwareVendorModel) = @{
 
   customSummaryListRow(
     key = "suitable-for",
-    filtersAvailable = vendor.orderedFilterSubset(VendorFilterGroups.suitableForFilters)
+    filtersAvailable = vendor.orderedFilterSubset(VendorFilterGroups.suitableForFilters).map(_._1).toSeq
   )
 
 }
@@ -84,7 +92,7 @@
 
   customSummaryListRow(
     key = "software-for",
-    filtersAvailable = vendor.orderedFilterSubset(VendorFilterGroups.softwareForFilters)
+    filtersAvailable = vendor.orderedFilterSubset(VendorFilterGroups.softwareForFilters).map(_._1).toSeq
   )
 
 }
@@ -93,7 +101,7 @@
 
   customSummaryListRow(
     key = "submission-type",
-    filtersAvailable = vendor.orderedFilterSubset(VendorFilterGroups.submissionTypeFilters)
+    filtersAvailable = vendor.orderedFilterSubset(VendorFilterGroups.submissionTypeFilters).map(_._1).toSeq
   )
 
 }
@@ -119,6 +127,7 @@
       rows = softwareVendorDetail(vendor),
       classes = "govuk-summary-list--no-border"
     ))
+    @softwareVendorFutureAvailabilityWarning(vendor)
     <p class="govuk-body">
       <a href="@{ProductDetailsController.show(URLEncoder.encode(vendor.name, "UTF-8"), zeroResults)}" class="govuk-link">
         @messages("search-software.vendor-visit-link", vendor.name)

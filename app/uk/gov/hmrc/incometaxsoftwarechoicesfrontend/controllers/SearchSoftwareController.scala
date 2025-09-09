@@ -50,8 +50,8 @@ class SearchSoftwareController @Inject()(searchSoftwarePage: SearchSoftwarePage,
       userType <- pageAnswersService.getPageAnswers(request.sessionId, UserTypePage)
       isAgent = userType.contains(Agent)
       model = SoftwareChoicesResultsViewModel(
-        allInOneVendors = softwareChoicesService.getAllInOneVendors(filters = filters),
-        otherVendors = softwareChoicesService.getOtherVendors(filters = filters, isAgent || zeroResults),
+        allInOneVendors = softwareChoicesService.getCurrentVendors(filters = filters),
+        otherVendors = softwareChoicesService.getFutureVendors(filters = filters),
         zeroResults = zeroResults,
         isAgent = isAgent
       )
@@ -69,7 +69,7 @@ class SearchSoftwareController @Inject()(searchSoftwarePage: SearchSoftwarePage,
       val isAgent = userType.contains(Agent)
       val model = SoftwareChoicesResultsViewModel(
         allInOneVendors = softwareChoicesService.getAllInOneVendors(userFilters.getOrElse(UserFilters(request.sessionId, None, filters.filters)).finalFilters),
-        otherVendors = softwareChoicesService.getOtherVendors(userFilters.getOrElse(UserFilters(request.sessionId, None, filters.filters)).finalFilters, isAgent || zeroResults),
+        otherVendors = softwareChoicesService.getAllInOneVendors(userFilters.getOrElse(UserFilters(request.sessionId, None, filters.filters)).finalFilters),
         zeroResults = zeroResults,
         isAgent = isAgent
       )

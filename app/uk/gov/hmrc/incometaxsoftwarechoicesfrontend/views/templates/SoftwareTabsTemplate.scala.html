@@ -49,24 +49,13 @@
      content = HtmlContent(
              tabHeading("search-software.all-in-one-tab", viewModel.allInOneVendors.vendors.size) +
              tabInsetText("search-software.all-in-one-tab", viewModel.allInOneVendors.vendors.size) +
-             softwareVendorsTemplate(viewModel.allInOneVendors, viewModel.zeroResults)
-  )))
-}
-
-@otherTab = @{
-  TabItem(
-    id = Some("other-software"),
-    label = messages("search-software.other-software-tab.title"),
-    panel = TabPanel(
-        content = HtmlContent(
-             tabHeading("search-software.other-software-tab", viewModel.otherVendors.vendors.size) +
-             tabInsetText("search-software.other-software-tab", viewModel.otherVendors.vendors.size) +
-             softwareVendorsTemplate(viewModel.otherVendors, viewModel.zeroResults)
+             softwareVendorsTemplate(viewModel.allInOneVendors, viewModel.zeroResults, false) +
+             softwareVendorsTemplate(viewModel.allInOneVendors, viewModel.zeroResults, true)
   )))
 }
 
 @{
  govukTabs(Tabs(
-  items = Seq(allInOneTab, otherTab))
+  items = Seq(allInOneTab))
  )
 }

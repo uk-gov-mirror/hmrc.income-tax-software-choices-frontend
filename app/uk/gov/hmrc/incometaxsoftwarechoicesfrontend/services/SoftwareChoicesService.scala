@@ -44,42 +44,32 @@ class SoftwareChoicesService @Inject()(
       vendors = (
         SoftwareChoicesService.matchFilter(filters) _
           andThen SoftwareChoicesService.sortVendors
-        ) (vendors.vendors)
+        )(vendors.vendors)
     )
   }
 
-  def getOtherVendors(filters: Seq[VendorFilter] = Seq.empty, isAgentOrZeroResults: Boolean = false): SoftwareVendors = {
-    val allInOne = if (isAgentOrZeroResults) Seq.empty else getAllInOneVendors(filters).vendors
+  def getCurrentVendors(filters: Seq[VendorFilter] = Seq.empty): SoftwareVendors = {
     val vendors = softwareVendors
-    val userTypes = filters.filter(userTypeFilters.contains)
-    val otherVendors = if (userTypes.isEmpty) {
-      (SoftwareChoicesService.matchFilter(filters.filterNot(userPageFilters.contains)) _
-        andThen SoftwareChoicesService.sortVendors
-      )(vendors.vendors)
-    } else {
-      val accountingPeriod = filters.find(accountingPeriodFilters.contains)
-      val mandatedIncomeSources = filters.filter(Seq(SoleTrader, UkProperty, OverseasProperty).contains)
-      val vendorsForUser = vendors.vendors.filter { vendor =>
-        vendor.mustHaveAll(userTypes) &&
-          vendor.mustHaveOption(accountingPeriod)
-      }
-      val matchingVendors = if (mandatedIncomeSources.isEmpty) {
-        vendorsForUser
-      } else {
-        vendorsForUser.filter(_.mustHaveAtLeast(mandatedIncomeSources))
-      }
-      val preferencesFilters = filters
-        .filterNot(userTypes.contains)
-        .filterNot(userPageFilters.contains)
-        .filterNot(mandatoryFiltersForIndividuals.contains)
-      (SoftwareChoicesService.matchFilter(preferencesFilters) _
-        andThen SoftwareChoicesService.sortVendors
-      )(matchingVendors)
-    }
     vendors.copy(
-      vendors = otherVendors.filterNot(allInOne.contains)
+      vendors = (
+        SoftwareChoicesService.matchFilter(filters) _
+          andThen SoftwareChoicesService.currentFilter(filters) _
+          andThen SoftwareChoicesService.sortVendors
+        )(vendors.vendors)
     )
   }
+
+  def getFutureVendors(filters: Seq[VendorFilter] = Seq.empty): SoftwareVendors = {
+    val vendors = softwareVendors
+    vendors.copy(
+      vendors = (
+        SoftwareChoicesService.matchFilter(filters) _
+          andThen SoftwareChoicesService.futureFilter(filters) _
+          andThen SoftwareChoicesService.sortVendors
+        )(vendors.vendors)
+    )
+  }
+
 }
 
 object SoftwareChoicesService {
@@ -89,5 +79,17 @@ object SoftwareChoicesService {
 
   private[services] def matchFilter(filters: Seq[VendorFilter])(vendors: Seq[SoftwareVendorModel]) =
     vendors.filter(vendor => filters.forall(vendor.filters.contains(_)))
+
+  private[services] def currentFilter(filters: Seq[VendorFilter])(vendors: Seq[SoftwareVendorModel]) =
+    vendors.filter(vendor =>
+      filters.forall(filter => vendor.filters.contains(filter) && true)
+//      filters.forall(filter => vendor.filters.contains(filter) && (vendor.filters.get(filter)._1 == true))
+    )
+
+  private[services] def futureFilter(filters: Seq[VendorFilter])(vendors: Seq[SoftwareVendorModel]) =
+    vendors.filter(vendor =>
+      filters.forall(filter => vendor.filters.contains(filter) && false)
+//      filters.forall(filter => vendor.filters.contains(filter) && (vendor.filters.get(filter)._1 == false))
+    )
 
 }

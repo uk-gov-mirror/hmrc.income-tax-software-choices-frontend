@@ -16,35 +16,44 @@
 
 package uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, Reads, __}
 
 case class SoftwareVendorModel(
   name: String,
   email: Option[String],
   phone: Option[String],
   website: String,
-  filters: Seq[VendorFilter],
-  accessibilityStatementLink: Option[String] = None
+  filters: Map[VendorFilter,Boolean],
+  accessibilityStatementLink: Option[String] = None,
+  nextRelease: Option[String] = None
 ) {
-  def orderedFilterSubset(subsetFilters: Set[VendorFilter]): Seq[VendorFilter] = {
-    val filtersFromVendor = filters.filter(filter => subsetFilters.contains(filter)).toSet
-    val alwaysDisplayedFilters = subsetFilters.filter(_.alwaysDisplay)
-    (filtersFromVendor ++ alwaysDisplayedFilters).toSeq.sortBy(_.priority)
-  }
-
-  def mustHaveAll(list: Seq[VendorFilter]): Boolean = {
-    list.forall(filters.contains)
-  }
-
-  def mustHaveOption(optFilter: Option[VendorFilter]): Boolean =
-    mustHaveAll(optFilter.toSeq)
-
-  def mustHaveAtLeast(list: Seq[VendorFilter]): Boolean = {
-    val contains = list.map(filters.contains)
-    contains.fold(false)((a, b) => a || b)
+  def orderedFilterSubset(subsetFilters: Set[VendorFilter]): Map[VendorFilter,Boolean] = {
+    val filtersFromVendor = filters.filter(filter => subsetFilters.contains(filter._1)).toSet
+    val alwaysDisplayedFilters = subsetFilters.filter(_.alwaysDisplay).map(_ -> true) // What is this used for
+    (filtersFromVendor ++ alwaysDisplayedFilters).toSeq.sortBy(_._1.priority).toMap
   }
 }
 
 object SoftwareVendorModel {
   implicit val reads: Reads[SoftwareVendorModel] = Json.reads[SoftwareVendorModel]
 }
+
+//sealed trait FeatureSupport {
+//  val key: String
+//}
+//
+//object FeatureSupport {
+//  case object CurrentFeature extends FeatureSupport{
+//    override val key: String = "current"
+//  }
+//
+//  case object FutureFeature extends FeatureSupport{
+//    override val key: String = "future"
+//  }
+//
+//  implicit val reads: Reads[FeatureSupport] = __.read[String] match {
+//    case "current" => CurrentFeature
+//    case "future" => FutureFeature
+//  }
+//
+//}
