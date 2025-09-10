@@ -17,19 +17,20 @@
 package uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models
 
 import play.api.libs.json.{Json, Reads, __}
+import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.FeatureStatus.CurrentFeature
 
 case class SoftwareVendorModel(
   name: String,
   email: Option[String],
   phone: Option[String],
   website: String,
-  filters: Map[VendorFilter,Boolean],
+  filters: Map[VendorFilter,FeatureStatus],
   accessibilityStatementLink: Option[String] = None,
   nextRelease: Option[String] = None
 ) {
-  def orderedFilterSubset(subsetFilters: Set[VendorFilter]): Map[VendorFilter,Boolean] = {
+  def orderedFilterSubset(subsetFilters: Set[VendorFilter]): Map[VendorFilter,FeatureStatus] = {
     val filtersFromVendor = filters.filter(filter => subsetFilters.contains(filter._1)).toSet
-    val alwaysDisplayedFilters = subsetFilters.filter(_.alwaysDisplay).map(_ -> true) // What is this used for
+    val alwaysDisplayedFilters = subsetFilters.filter(_.alwaysDisplay).map(_ -> CurrentFeature) // What is this used for
     (filtersFromVendor ++ alwaysDisplayedFilters).toSeq.sortBy(_._1.priority).toMap
   }
 }
@@ -37,23 +38,3 @@ case class SoftwareVendorModel(
 object SoftwareVendorModel {
   implicit val reads: Reads[SoftwareVendorModel] = Json.reads[SoftwareVendorModel]
 }
-
-//sealed trait FeatureSupport {
-//  val key: String
-//}
-//
-//object FeatureSupport {
-//  case object CurrentFeature extends FeatureSupport{
-//    override val key: String = "current"
-//  }
-//
-//  case object FutureFeature extends FeatureSupport{
-//    override val key: String = "future"
-//  }
-//
-//  implicit val reads: Reads[FeatureSupport] = __.read[String] match {
-//    case "current" => CurrentFeature
-//    case "future" => FutureFeature
-//  }
-//
-//}

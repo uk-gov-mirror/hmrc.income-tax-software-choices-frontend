@@ -50,8 +50,8 @@ class SearchSoftwareController @Inject()(searchSoftwarePage: SearchSoftwarePage,
       userType <- pageAnswersService.getPageAnswers(request.sessionId, UserTypePage)
       isAgent = userType.contains(Agent)
       model = SoftwareChoicesResultsViewModel(
-        allInOneVendors = softwareChoicesService.getCurrentVendors(filters = filters),
-        otherVendors = softwareChoicesService.getFutureVendors(filters = filters),
+        allInOneVendors = softwareChoicesService.getCurrentVendors(filters),
+        otherVendors = softwareChoicesService.getFutureVendors(filters),
         zeroResults = zeroResults,
         isAgent = isAgent
       )

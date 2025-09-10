@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incometaxsoftwarechoicesfrontend.services
 
+import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.FeatureStatus.CurrentFeature
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.VendorFilter.{OverseasProperty, SoleTrader, UkProperty}
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.VendorFilterGroups._
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.{SoftwareVendorModel, SoftwareVendors, VendorFilter}
@@ -60,13 +61,12 @@ class SoftwareChoicesService @Inject()(
   }
 
   def getFutureVendors(filters: Seq[VendorFilter] = Seq.empty): SoftwareVendors = {
+    val all = getAllInOneVendors(filters)
+    val current = getCurrentVendors(filters)
+
     val vendors = softwareVendors
     vendors.copy(
-      vendors = (
-        SoftwareChoicesService.matchFilter(filters) _
-          andThen SoftwareChoicesService.futureFilter(filters) _
-          andThen SoftwareChoicesService.sortVendors
-        )(vendors.vendors)
+      vendors = all.vendors.filterNot(current.vendors.contains(_))
     )
   }
 
@@ -82,14 +82,7 @@ object SoftwareChoicesService {
 
   private[services] def currentFilter(filters: Seq[VendorFilter])(vendors: Seq[SoftwareVendorModel]) =
     vendors.filter(vendor =>
-      filters.forall(filter => vendor.filters.contains(filter) && true)
-//      filters.forall(filter => vendor.filters.contains(filter) && (vendor.filters.get(filter)._1 == true))
-    )
-
-  private[services] def futureFilter(filters: Seq[VendorFilter])(vendors: Seq[SoftwareVendorModel]) =
-    vendors.filter(vendor =>
-      filters.forall(filter => vendor.filters.contains(filter) && false)
-//      filters.forall(filter => vendor.filters.contains(filter) && (vendor.filters.get(filter)._1 == false))
+      filters.forall(filter => vendor.filters.contains(filter) && vendor.filters(filter).equals(CurrentFeature))
     )
 
 }
