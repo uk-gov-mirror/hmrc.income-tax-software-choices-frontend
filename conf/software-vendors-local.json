@@ -49,6 +49,66 @@
         "apple-ios": "current",
         "english": "current"
       }
+    },
+    {
+      "name": "test software vendor name two",
+      "email": "test@software-vendor-name-two.com",
+      "phone": "22222 222 222",
+      "website": "software-vendor-name-two.com",
+      "nextRelease" : "",
+      "filters": {
+        "individual": "current",
+        "agent": "current"
+      }
+    },
+    {
+      "name": "test software vendor name three",
+      "email": "test@software-vendor-name-three.com",
+      "phone": "3333 333 333",
+      "website": "software-vendor-name-three.com",
+      "nextRelease" : "Feb 2027",
+      "filters": {
+        "agent": "current",
+        "free-version": "current",
+        "uk-property": "current",
+        "record-keeping": "current",
+        "vat": "current",
+        "hearing": "current",
+        "cognitive": "current",
+        "tax-return": "current",
+        "calendar-update-periods": "current",
+        "capital-gains-tax": "current",
+        "foreign-income": "current",
+        "uk-interest": "current",
+        "high-income-child-benefit-charge": "current",
+        "voluntary-class-2-national-insurance": "current",
+        "private-pension-income": "current",
+        "marriage-allowance": "current"
+      }
+    },
+    {
+      "name": "test software: vendor name #four",
+      "email": "test@software-vendor-name-four.com",
+      "phone": "44444 444 444",
+      "website": "software-vendor-name-four.com",
+      "nextRelease" : "Jan 2026",
+      "filters": {
+        "individual": "current",
+        "sole-trader": "current",
+        "overseas-property": "future",
+        "bridging": "current",
+        "visual": "current",
+        "motor": "current",
+        "quarterly-updates": "current",
+        "standard-update-periods": "current",
+        "construction-industry-scheme": "current",
+        "employment": "current",
+        "uk-dividends": "current",
+        "charitable-giving": "current",
+        "student-loans": "current",
+        "state-pension-income": "current",
+        "payments-into-a-private-pension": "current"
+      }
     }
   ]
 }

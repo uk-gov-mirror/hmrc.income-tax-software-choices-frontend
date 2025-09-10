@@ -248,6 +248,14 @@ search-software.other-software-tab.inset.many = You may need to combine several 
 search-software.other-software-tab.inset.one = There are no software products you can combine to meet your tax obligations.
 search-software.other-software-tab.inset.none = There are no software products you can combine to meet your tax obligations.
 
+search-software.future-software-tab.title = Future software
+search-software.future-software-tab.heading.many = Based on your answers we’ve found {0} results
+search-software.future-software-tab.heading.one = Based on your answers we’ve found 1 result
+search-software.future-software-tab.heading.none = There are no matching results
+search-software.future-software-tab.inset.many = You may need to combine several pieces of software to fully complete your quarterly updates and tax return.
+search-software.future-software-tab.inset.one = There are no software products you can combine to meet your tax obligations.
+search-software.future-software-tab.inset.none = There are no software products you can combine to meet your tax obligations.
+
 # Product details page
 
 product-details.details.before-you-choose-header = Before you choose

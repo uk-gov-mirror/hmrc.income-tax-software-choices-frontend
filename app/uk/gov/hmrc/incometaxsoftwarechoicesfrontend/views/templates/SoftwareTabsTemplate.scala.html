@@ -49,13 +49,37 @@
      content = HtmlContent(
              tabHeading("search-software.all-in-one-tab", viewModel.allInOneVendors.vendors.size) +
              tabInsetText("search-software.all-in-one-tab", viewModel.allInOneVendors.vendors.size) +
-             softwareVendorsTemplate(viewModel.allInOneVendors, viewModel.zeroResults, false) +
-             softwareVendorsTemplate(viewModel.otherVendors, viewModel.zeroResults, true)
+             softwareVendorsTemplate(viewModel.allInOneVendors, viewModel.zeroResults, false)
   )))
+}
+
+@otherTab = @{
+    TabItem(
+        id = Some("other-software"),
+        label = messages("search-software.other-software-tab.title"),
+        panel = TabPanel(
+            content = HtmlContent(
+                tabHeading("search-software.other-software-tab", viewModel.otherVendors.vendors.size) +
+                        tabInsetText("search-software.other-software-tab", viewModel.otherVendors.vendors.size) +
+                        softwareVendorsTemplate(viewModel.otherVendors, viewModel.zeroResults, false)
+            )))
+}
+
+@futureTab = @{
+    TabItem(
+        id = Some("future-software"),
+        label = messages("search-software.future-software-tab.title"),
+        panel = TabPanel(
+            content = HtmlContent(
+                tabHeading("search-software.future-software-tab", viewModel.otherVendors.vendors.size) +
+                        tabInsetText("search-software.future-software-tab", viewModel.otherVendors.vendors.size) +
+                        softwareVendorsTemplate(viewModel.futureVendors, viewModel.zeroResults, !viewModel.futureVendors.vendors.isEmpty)
+            )))
 }
 
 @{
  govukTabs(Tabs(
-  items = Seq(allInOneTab))
+  items = Seq(allInOneTab, otherTab))
+//  items = Seq(allInOneTab, futureTab, otherTab))
  )
 }

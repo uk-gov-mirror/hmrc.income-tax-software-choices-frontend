@@ -33,6 +33,19 @@ case class SoftwareVendorModel(
     val alwaysDisplayedFilters = subsetFilters.filter(_.alwaysDisplay).map(_ -> CurrentFeature) // What is this used for
     (filtersFromVendor ++ alwaysDisplayedFilters).toSeq.sortBy(_._1.priority).toMap
   }
+
+
+  def mustHaveAll(list: Seq[VendorFilter]): Boolean = {
+    list.forall(filters.contains)
+  }
+
+  def mustHaveOption(optFilter: Option[VendorFilter]): Boolean =
+    mustHaveAll(optFilter.toSeq)
+
+  def mustHaveAtLeast(list: Seq[VendorFilter]): Boolean = {
+    val contains = list.map(filters.contains)
+    contains.fold(false)((a, b) => a || b)
+  }
 }
 
 object SoftwareVendorModel {

@@ -21,6 +21,7 @@ import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.SoftwareVendors
 case class SoftwareChoicesResultsViewModel (
                                              allInOneVendors: SoftwareVendors = SoftwareVendors.empty,
                                              otherVendors: SoftwareVendors = SoftwareVendors.empty,
+                                             futureVendors: SoftwareVendors = SoftwareVendors.empty,
                                              zeroResults: Boolean = false,
                                              isAgent: Boolean = false
                                            )
