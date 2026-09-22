@@ -24,6 +24,8 @@ import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.SoftwareVendorModel
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.VendorFilter.*
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.views.html.ProductDetailsView
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.helpers.TestModels.softwareVendorModelBase
+import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.UserType
+import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.models.UserType.{SoleTraderOrLandlord, Agent}
 
 class ProductDetailsViewSpec extends ViewSpec with BeforeAndAfterEach {
 
@@ -75,7 +77,7 @@ class ProductDetailsViewSpec extends ViewSpec with BeforeAndAfterEach {
         link.attr("href") shouldBe softwareVendorModelFull.website
         link.attr("target") shouldBe "_blank"
       }
-      
+
       "have a software features heading" in {
         document.selectNth("h2", 1).text shouldBe ProductDetailsPage.softwareFeaturesHeading
       }
@@ -225,7 +227,7 @@ class ProductDetailsViewSpec extends ViewSpec with BeforeAndAfterEach {
       "display the vendor name heading" in {
         document.selectNth("h1", 1).text() shouldBe softwareVendorModelBase.name
       }
-      
+
       "has a link to the vendor website" in {
         val link = document.mainContent.select(".govuk-link").get(0)
         link.text shouldBe s"Confirm whether ${softwareVendorModelBase.name} is right for you (opens in new tab)"
@@ -355,37 +357,58 @@ class ProductDetailsViewSpec extends ViewSpec with BeforeAndAfterEach {
     }
 
     "display the getting started section" which {
-      val document: Document = createAndParseDocument(softwareVendorModelFull)
 
-      "has the getting started heading" in {
-        document.select("h2").get(4).text shouldBe ProductDetailsPage.gettingStartedHeading
+      "for an individual (SoleTraderOrLandlord) user type" should {
+        val document: Document = createAndParseDocument(softwareVendorModelFull, Some(SoleTraderOrLandlord))
+
+        "has the getting started heading" in {
+          document.select("h2").get(4).text shouldBe ProductDetailsPage.gettingStartedHeading
+        }
+
+        "has the getting started text" in {
+          document.select(".app-getting-started-box > p").text shouldBe ProductDetailsPage.gettingStartedText
+        }
+
+        "has a link to sign up for MTD as an individual" in {
+          val link = document.mainContent.select(".govuk-link").get(1)
+          link.text shouldBe s"${ProductDetailsPage.gettingStartedSignUp} (opens in new tab)"
+          link.attr("href") shouldBe appConfig.individualSignUpForMtdUrl
+          link.attr("target") shouldBe "_blank"
+        }
+
+        "has a link to authorise software" in {
+          val link = document.mainContent.select(".govuk-link").get(2)
+          link.text shouldBe s"${ProductDetailsPage.gettingStartedAuthorise} (opens in new tab)"
+          link.attr("href") shouldBe appConfig.getSoftwareReadyUrl
+          link.attr("target") shouldBe "_blank"
+        }
       }
 
-      "has the getting started text" in {
-        document.select(".app-getting-started-box > p").text shouldBe ProductDetailsPage.gettingStartedText
+      "for an agent user type" should {
+        val document: Document = createAndParseDocument(softwareVendorModelFull, Some(Agent))
+
+        "has a link to sign up for MTD as an agent" in {
+          val link = document.mainContent.select(".govuk-link").get(1)
+          link.attr("href") shouldBe appConfig.agentSignUpForMtdUrl
+        }
       }
 
-      "has a link to sign up for MTD" in {
-        val link = document.mainContent.select(".govuk-link").get(1)
-        link.text shouldBe s"${ProductDetailsPage.gettingStartedSignUp} (opens in new tab)"
-        link.attr("href") shouldBe appConfig.individualSignUpForMtdUrl
-        link.attr("target") shouldBe "_blank"
-      }
+      "for an unspecified user type (no answer given)" should {
+        val document: Document = createAndParseDocument(softwareVendorModelFull, None)
 
-      "has a link to authorise software" in {
-        val link = document.mainContent.select(".govuk-link").get(2)
-        link.text shouldBe s"${ProductDetailsPage.gettingStartedAuthorise} (opens in new tab)"
-        link.attr("href") shouldBe appConfig.getSoftwareReadyUrl
-        link.attr("target") shouldBe "_blank"
+        "has a link to sign up for MTD for an unspecified user type" in {
+          val link = document.mainContent.select(".govuk-link").get(1)
+          link.attr("href") shouldBe appConfig.unspecifiedSignUpForMtdUrl
+        }
       }
     }
   }
 
-  private def page(vendorModel: SoftwareVendorModel) =
-    productDetailsPage(vendorModel, testBackUrl)
+   def page(vendorModel: SoftwareVendorModel, userType: Option[UserType] = Some(SoleTraderOrLandlord)) =
+    productDetailsPage(vendorModel, testBackUrl, userType)
 
-  private def createAndParseDocument(vendorModel: SoftwareVendorModel): Document =
-    Jsoup.parse(page(vendorModel).body)
+   def createAndParseDocument(vendorModel: SoftwareVendorModel, userType: Option[UserType] = Some(SoleTraderOrLandlord)): Document =
+    Jsoup.parse(page(vendorModel, userType).body)
 
   object ProductDetailsPage {
     

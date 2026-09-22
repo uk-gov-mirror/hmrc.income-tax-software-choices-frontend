@@ -26,6 +26,7 @@ import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.repositories.UserFiltersRepo
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.services.{PageAnswersService, SoftwareChoicesService}
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.pages.{EnterSoftwareNamePage, HowYouFindSoftwarePage}
 import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.views.html.{NotFoundView, ProductDetailsView}
+import uk.gov.hmrc.incometaxsoftwarechoicesfrontend.pages.UserTypePage
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -48,9 +49,10 @@ class ProductDetailsController @Inject()(softwareChoicesService: SoftwareChoices
     } yield {
       (userFilters, vendorOpt) match {
         case (Some(userFilters), Some(softwareVendor)) =>
-          Ok(productDetailsView(softwareVendor, backLink(userFilters.answers, userFilters.finalFilters, softwareVendor)))
+          val userType = pageAnswersService.getPageAnswers(userFilters.answers, UserTypePage)
+          Ok(productDetailsView(softwareVendor, backLink(userFilters.answers, userFilters.finalFilters, softwareVendor), userType))
         case (None, Some(softwareVendor)) =>
-          Ok(productDetailsView(softwareVendor, routes.SearchSoftwareController.show().url))
+          Ok(productDetailsView(softwareVendor, routes.SearchSoftwareController.show().url, None))
         case _ =>
           NotFound(notFoundView(routes.ProductDetailsController.show(productId).url))
       }
