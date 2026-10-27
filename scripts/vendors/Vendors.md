@@ -6,9 +6,9 @@ The vendor data capture template is a spreadsheet that allows the customer (HMRC
 
 The customer will complete a template for each software product to be added to the Software Choices service and share that spreadsheet with the development team.
 
-The development team will use `process_vendor.py` to extract, validate and apply the JSON data to [software-vendors.json](../conf/software-vendors.json), and in the case of a new vendor, update [VendorDetails.md](./VendorDetails.md) to include a link to the product details page for that vendor.
+The development team will use `process_vendor.py` to extract, validate and apply the JSON data to [software-vendors.json](../../conf/software-vendors.json), and in the case of a new vendor, update [VendorDetails.md](vendor_data/VendorDetails.md) to include a link to the product details page for that vendor.
 
-**IMPORTANT**: If part of an update to an existing product includes that product being renamed, this script will not work as expected, without the name being first manually updated in both [software-vendors.json](../conf/software-vendors.json) & [VendorDetails.md](./VendorDetails.md) before the script is run. It was not possible to make allowances for this, as some vendors have multiple products, with similar contact details, but different names. Therefore, matching on anything other than the name would cause issues with these products. Fortunately, a vendor renaming their product is comparatively rare, and involves some admin for the vendor!
+**IMPORTANT**: If part of an update to an existing product includes that product being renamed, this script will not work as expected, without the name being first manually updated in both [software-vendors.json](../../conf/software-vendors.json) & [VendorDetails.md](vendor_data/VendorDetails.md) before the script is run. It was not possible to make allowances for this, as some vendors have multiple products, with similar contact details, but different names. Therefore, matching on anything other than the name would cause issues with these products. Fortunately, a vendor renaming their product is comparatively rare, and involves some admin for the vendor!
 
 Note: If a new vendor product is to be added, the script automatically assigns a new `productId` that is 3 larger than the last entry.
 
@@ -27,29 +27,22 @@ If not installed, install via Homebrew:
 
 `brew install python3`
 
-2 — Install the required Python libraries:
+2 — Create and Activate the Virtual Environment
+```terminaloutput
+# Creates the environment
+python3 -m venv .venv            
+```
+```terminaloutput
+# Activate the environment
+source .venv/bin/activate        # macOS/Linux
+.venv\Scripts\Activate.ps1       # Windows PowerShell
+```
 
-Check if already installed:
-
-`python3 -c "import openpyxl"`
-`python3 -c "import markdown"`
-`python3 -c "import pandas"`
-
-If not installed:
-
-`pip3 install openpyxl`
-`pip3 install markdown`
-`pip3 install pandas`
-
-3 — Verify all are working:
-
-`python3 --version`       # should print e.g. Python 3.x.x
-
-`pip3 show openpyxl`      # should show openpyxl version info
-
-`pip3 show markdown`      # should show markdown version info
-
-`pip3 show pandas`        # should show pandas version info
+3 — Install the Python Dependencies
+```terminaloutput
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 
 ### Step 1 — Create a branch based on the task number
 
@@ -61,7 +54,7 @@ If not installed:
 
 ###  Step 2 — Copy the vendor .xlsx file(s) into the vendors folder
 
-Copy the completed template(s) received from the vendor management team into `scripts/vendors/`. This folder is git ignored. This is so that the `.xlsx` files will not be committed, but has the side effect that you will have to create the folder yourself the first time that you use the script. The script deletes all successfully processed `.xlsx` files from your local folder after a run, to prevent issues occurring in any future runs of the script. Skipped or errored files are kept for analysis.
+Copy the completed template(s) received from the vendor management team into `scripts/vendors/vendor_data/`. The script deletes all successfully processed `.xlsx` files from your local folder after a run, to prevent issues occurring in any future runs of the script. Skipped or errored files are kept for analysis.
 
 ### Step 3 — Run the vendor processor script
 
@@ -70,15 +63,15 @@ Copy the completed template(s) received from the vendor management team into `sc
 `python3 scripts/process_vendor.py`
 
 The script will automatically:
-- Read all `.xlsx` files in `scripts/vendors/`
+- Read all `.xlsx` files in `scripts/vendors/vendor_data/`
 - Extract the JSON from the Json Output sheet
 - Remove any invalid control characters (e.g. accidental newlines)
 - Trim leading/trailing whitespace from all fields
 - Update website URLs with an `http://` protocol to ones with an `https://` protocol
 - Insert new vendors or update existing ones in `conf/software-vendors.json`
 - Print a diff table of all changes made
-- Delete all `.xlsx` files in `scripts/vendors/` relating to updated or inserted records
-- Update `docs/VendorDetails.md` with product details page of any newly added vendors
+- Delete all `.xlsx` files in `scripts/vendors/vendor_data/` relating to updated or inserted records
+- Update `scripts/vendors/VendorDetails.md` with product details page of any newly added vendors
 
 ## Template Update process
 
